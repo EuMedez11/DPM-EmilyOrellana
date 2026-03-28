@@ -1,6 +1,4 @@
 package com.example.laboratorio2
-
-import android.R.attr.text
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,8 +9,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,12 +25,12 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.booleanResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.laboratorio2.ui.theme.Laboratorio2Theme
@@ -43,17 +43,20 @@ class MainActivity : ComponentActivity() {
             Laboratorio2Theme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     GreeringAplicacion()
+                    }
                 }
             }
         }
     }
-}
 
 
 @Preview(showBackground = true)
 
 @Composable
 fun GreeringAplicacion() {
+    val lista = remember { mutableStateListOf<String>() }
+    val nombre: MutableState<String> = remember { mutableStateOf("") }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -62,12 +65,10 @@ fun GreeringAplicacion() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-
-        val usuario: MutableState<String> = remember { mutableStateOf("") }
         TextField(
-            value = usuario.value,
+            value = nombre.value,
             onValueChange = {
-                usuario.value = it
+                nombre.value = it
             },
         )
         val pulsado: MutableState<Int> = remember {
@@ -75,7 +76,8 @@ fun GreeringAplicacion() {
         }
         Button(
             onClick = {
-                pulsado.value++
+                lista.add(nombre.value)
+                nombre.value = ""
             }
         ) {
             Text(text = "Guardar")
@@ -92,45 +94,30 @@ fun GreeringAplicacion() {
             }
             Button(
                 onClick = {
-                    pulsado.value++
+                    lista.clear()
                 }
             ) {
                 Text(text = "Limpiar")
             }
         }
         Box(
-            modifier = Modifier.border(
+            modifier = Modifier.fillMaxWidth().height(300.dp).border(
                 width = 2.dp,
                 color = Color.Blue,
-                shape = RoundedCornerShape((16.dp))
+                shape = RoundedCornerShape(16.dp)
             ),
         ) {
-            val entries: List<String> = listOf(
-                "One",
-                "Two",
-                "Three",
-                "Four",
-                "Five",
-                "Six",
-                "Seven",
-                "Eight",
-                "Nine",
-                "Ten"
-            )
             LazyColumn {
-                itemsIndexed(entries.toList()) { index, item ->
+                itemsIndexed(lista) { index, item ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(10.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(
-                            text = item
-                        )
-                        Text(
-                            text = (index + 1).toString()
-                        )
+                        Text(text = item)
+                        Text(text = (index + 1).toString())
+
                     }
                 }
             }
